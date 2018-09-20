@@ -1,4 +1,4 @@
-#include <bits/stdc++.h>
+#include <iostream>
 #define endl '\n'
 
 using namespace std;
@@ -12,31 +12,44 @@ struct archive {
 
 };
 
-struct queue {
+struct list {
     int quant = 0;
     archive *front;
-    archive *back;
+    archive *rear;
 
-    archive(): front(new archive(" ", 0)), back(nullptr){}
+    list(): front(new archive(" ", 0)), rear(nullptr){}
 
     void add(archive *n) {
-        if (!this->back) {
+        if (!this->rear) {
             this->front->next = n;
-            this->back = n;
+            this->rear = n;
         } else {
-            this->back->next = n;
-            this->back = n;
+            this->rear->next = n;
+            this->rear = n;
         }
         quant++;
     }
 
     void print(){
         archive *cur = this->front->next;
-        while(cur){
-            cout << cur->nome << " " << cur->id << endl;
+        while(cur) {
+            cout << cur->name << endl << cur->id << endl;
             cur = cur->next;
         }
     }
+/*
+    int *binary_search(int id, list *oldFiles) {
+        int *cur = oldFiles[0]->front->next;
+        while(cur) {
+            if(cur->id == id) {
+                break;
+            } else {
+                cur = cur->next;
+            }
+        }
+        return &cur;
+    }
+*/
 };
 
 
@@ -45,26 +58,33 @@ struct hash_table {
 };
 
 
-int main(int argc, har *argv[]) {
+int main(int argc, char *argv[]) {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    int num_oldFiles, id;
+    int num_oldFiles, id, num_drawers, num_transf, id_transf;
     string name;
 
     cin >> num_oldFiles;
 
     archive *oldFiles [num_oldFiles];
 
-    for (int i = 0; i < num_oldFiles; i++) {
-        cin >> name;
-        cin >> id;
+    for (int i = 0; i < num_oldFiles; ++i) {
+        cin >> name >> id;
         archive *file = new archive(name, id);
         oldFiles[i] = file;
     }
+/*
+    cin >> num_drawers >> num_transf;
 
-    oldFiles.print();
+    list drawers [num_drawers];
 
-    
+    for (int j = 0; j < num_transf; ++j) {
+        cin >> id_transf;
+
+        drawers[j] = oldFiles.binary_search(id_transf, *oldFiles);
+    }
+
+*/
     return 0;
 };
