@@ -37,33 +37,48 @@ struct list {
             cur = cur->next;
         }
     }
-/*
-    int *binary_search(int id, list *oldFiles) {
-        int *cur = oldFiles[0]->front->next;
-        while(cur) {
-            if(cur->id == id) {
-                break;
-            } else {
-                cur = cur->next;
-            }
+
+};
+
+int binary_search(int id, archive *oldFiles[]) {
+    int l = 0;
+    int r = sizeof(oldFiles)/sizeof(oldFiles[0]) - 1;
+    int m, position;
+
+    while(l <= r) {
+        m = (l+r)/2;
+        if (oldFiles[m]->id == id) {
+            return m;
+        } else if (oldFiles[m]->id > id) {
+            r = m-1;
+        } else {
+            l = m+1;
         }
-        return &cur;
     }
-*/
-};
+    return -1;
+}
 
 
-struct hash_table {
+int hash_table(string key, int num_drawers) {
+    int drawer;
+    int k = 0;
 
-};
+    for (int i = 0; i < key.length(); ++i) {
+        k += (i+1) * key[i];
+    }
+
+    drawer = k % num_drawers;
+
+    return drawer;
+}
 
 
 int main(int argc, char *argv[]) {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    int num_oldFiles, id, num_drawers, num_transf, id_transf;
-    string name;
+    int num_oldFiles, id, num_drawers, num_fileTransf, id_transf, position, fileTransf, num_consultFiles;
+    string name, consultFile;
 
     cin >> num_oldFiles;
 
@@ -74,17 +89,24 @@ int main(int argc, char *argv[]) {
         archive *file = new archive(name, id);
         oldFiles[i] = file;
     }
-/*
-    cin >> num_drawers >> num_transf;
 
-    list drawers [num_drawers];
+    cin >> num_drawers >> num_fileTransf;
 
-    for (int j = 0; j < num_transf; ++j) {
+    list *drawer = new list [num_drawers];
+
+    for (int j = 0; j < num_fileTransf; ++j) {
         cin >> id_transf;
-
-        drawers[j] = oldFiles.binary_search(id_transf, *oldFiles);
+        position = binary_search(id_transf, oldFiles);
+        fileTransf = hash_table(oldFiles[position]->name, num_drawers);
+        drawer[fileTransf].add(oldFiles[position]);
     }
 
-*/
+    cin >> num_consultFiles;
+
+    for (int k = 0; k < num_consultFiles; ++k) {
+        // drawer[k]
+    }
+
+
     return 0;
 };
