@@ -40,10 +40,10 @@ struct list {
 
 };
 
-int binary_search(int id, archive *oldFiles[]) {
+int binary_search(int id, archive *oldFiles[], int num_oldFiles) {
     int l = 0;
-    int r = sizeof(oldFiles)/sizeof(oldFiles[0]) - 1;
-    int m, position;
+    int r = num_oldFiles - 1;
+    int m;
 
     while(l <= r) {
         m = (l+r)/2;
@@ -72,12 +72,23 @@ int hash_table(string key, int num_drawers) {
     return drawer;
 }
 
+int find_element(string name, list *drawer, int drawer_position) {
+    archive *cur = drawer[drawer_position].front->next;
+    int position = 0;
+
+    while ((!cur->next) && cur->next->name != name) {
+        cur = cur->next;
+        position++;
+    }
+    return position;
+}
+
 
 int main(int argc, char *argv[]) {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    int num_oldFiles, id, num_drawers, num_fileTransf, id_transf, position, fileTransf, num_consultFiles;
+    int num_oldFiles, id, num_drawers, num_fileTransf, id_transf, position, fileTransf, num_consultFiles, drawer_position;
     string name, consultFile;
 
     cin >> num_oldFiles;
@@ -96,17 +107,25 @@ int main(int argc, char *argv[]) {
 
     for (int j = 0; j < num_fileTransf; ++j) {
         cin >> id_transf;
-        position = binary_search(id_transf, oldFiles);
+        position = binary_search(id_transf, oldFiles, num_oldFiles);
         fileTransf = hash_table(oldFiles[position]->name, num_drawers);
         drawer[fileTransf].add(oldFiles[position]);
     }
 
     cin >> num_consultFiles;
 
-    for (int k = 0; k < num_consultFiles; ++k) {
-        // drawer[k]
+    for (int l = 0; l < num_drawers; ++l) {
+        cout << l << ": " << drawer[l].quant << endl;
     }
 
+    for (int k = 0; k < num_consultFiles; ++k) {
+        cin >> consultFile;
+
+        drawer_position = hash_table(consultFile, num_drawers);
+        position = find_element(consultFile, drawer, drawer_position);
+
+        cout << k << ": " << position << endl;
+    }
 
     return 0;
 };
