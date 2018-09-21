@@ -30,14 +30,6 @@ struct list {
         quant++;
     }
 
-    void print(){
-        archive *cur = this->front->next;
-        while(cur) {
-            cout << cur->name << endl << cur->id << endl;
-            cur = cur->next;
-        }
-    }
-
 };
 
 int binary_search(int id, archive *oldFiles[], int num_oldFiles) {
@@ -72,11 +64,11 @@ int hash_table(string key, int num_drawers) {
     return drawer;
 }
 
-int find_element(string name, list *drawer, int drawer_position) {
-    archive *cur = drawer[drawer_position].front->next;
-    int position = 0;
+int find_element(string name, list *drawer) {
+    archive *cur = drawer->front;
+    int position = 1;
 
-    while ((!cur->next) && cur->next->name != name) {
+    while (cur->next && cur->next->name != name) {
         cur = cur->next;
         position++;
     }
@@ -122,7 +114,7 @@ int main(int argc, char *argv[]) {
         cin >> consultFile;
 
         drawer_position = hash_table(consultFile, num_drawers);
-        position = find_element(consultFile, drawer, drawer_position);
+        position = find_element(consultFile, &drawer[drawer_position]);
 
         cout << k << ": " << position << endl;
     }
