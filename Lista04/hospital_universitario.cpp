@@ -37,14 +37,21 @@ struct heap {
     }
 
     void double_size() {
-
+        patient *aux = new patient[(2* this->arraySize) + 1];
+        for (int i = 0; i < this->arraySize; ++i) {
+            aux[i] = this->f[i];
+        }
+        delete this->f;
+        this->f = aux;
+        this->arraySize = (2* this->arraySize) + 1;
+        
     }
 
     void bubble_up(int heapSize) {
         int i = heapSize;
         while (i > 0 && this->f[i].urgency >= this->f[(i-1) / 2].urgency) {
             if ()
-            patient *aux;
+            patient *aux = new patient;
             aux = this->p[i];
             this->p[i] = p[(i-1) / 2];
             this->p[(i-1) / 2] = aux;
