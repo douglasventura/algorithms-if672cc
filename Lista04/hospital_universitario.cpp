@@ -32,8 +32,8 @@ struct heap {
             double_size();
         }
         f[this->heapSize] = *p;
-        bubble_up(heapSize);
         this->heapSize++;
+        bubble_up(heapSize);
     }
 
     void double_size() {
@@ -44,27 +44,71 @@ struct heap {
         delete this->f;
         this->f = aux;
         this->arraySize = (2* this->arraySize) + 1;
-        
     }
 
     void bubble_up(int heapSize) {
-        int i = heapSize;
+        int i = heapSize - 1;
         while (i > 0 && this->f[i].urgency >= this->f[(i-1) / 2].urgency) {
-            if ()
-            patient *aux = new patient;
-            aux = this->p[i];
-            this->p[i] = p[(i-1) / 2];
-            this->p[(i-1) / 2] = aux;
+            patient aux2 = this->f[i];
+            this->f[i] = f[(i-1) / 2];
+            this->f[(i-1) / 2] = aux2;
             i = ((i-1)/2) - 1;
         }
     }
 
-    void heap_remove() {
+    patient heap_extract() {
+        patient aux3 = this->f[0];
+        this->f[0] = this->f[this->heapSize - 1];
+        this->heapSize--;
+        heapify(0);
 
+        return aux3;
+    }
+
+    void heapify(int i) {
+        int m = i;
+        int l = (2 * i) + 1;
+        int r = (2 * i) + 2;
+
+        if (l < this->heapSize && this->f[l].urgency <= this->f[m].urgency) {
+            if (this->f[l].urgency == this->f[m].urgency) {
+                if (this->f[l].age > this->f[m].age) {
+                    m = l;
+                } else if (this->f[l].age == this->f[m].age) {
+                    if (this->f[l].arrival < this->f[m].arrival) {
+                        m = l;
+                    }
+                }
+            } else {
+                m = l;
+            }
+        }
+
+        if (r < this->heapSize && this->f[r].urgency <= this->f[m].urgency) {
+            if (this->f[r].urgency == this->f[m].urgency) {
+                if (this->f[r].age > this->f[m].age) {
+                    m = r;
+                } else if (this->f[r].age == this->f[m].age) {
+                    if (this->f[r].arrival < this->f[m].arrival) {
+                        m = r;
+                    }
+                }
+            } else {
+                m = r;
+            }
+        }
+
+        if (m != i) {
+            patient aux4 = this->f[i];
+            this->f[i] = this->f[m];
+            this->f[m] = aux4;
+            heapify(m);
+        }
 
     }
 
 };
+
 
 int main(int argc, char *argv[]) {
     ios::sync_with_stdio(false);
@@ -81,6 +125,10 @@ int main(int argc, char *argv[]) {
 
     heap *services[numServices];
 
+    for (int i = 0; i < numServices; i++) {
+        services[i] = new heap();
+    }
+
     while (command != "END") {
         cin >> command;
 
@@ -92,14 +140,16 @@ int main(int argc, char *argv[]) {
 
         } else if (command == "NXT") {
             cin >> index;
-            p = services[index]->nxt();
-            cout << index << p->age << p->urgency << endl;
-            services[index]->heap_remove();
+
+            if (services[index]->f) {
+                *p = services[index]->heap_extract();
+                cout << index << " " << p->age << " " << p->urgency << endl;
+            } else {
+                cout << -1 -1 -1 << endl;
+            }
 
         } else if (command == "STD") {
-            // p = services[]->std();
-
-            cout << 0 << p->age << p->urgency << endl;
+            cout << 0 << " " << p->age << " " << p->urgency << endl;
         }
     }
 
