@@ -7,10 +7,10 @@ using namespace std;
 
 struct Graph {
     int nodes; // número de vértices
-    list<int> *adjacent; // lista de vertices ajdancetes
+    list<int> *adjacent; // lista de vértices ajdancetes
 
     Graph(int mazeSize) { // construtor
-        this->nodes = mazeSize;
+        this->nodes = mazeSize * mazeSize;
         this->adjacent = new list<int>[this->nodes];
     }
 
@@ -18,17 +18,12 @@ struct Graph {
         queue<int> aux; // fila auxiliar para guardar os vértices adjacentes que ainda precisam ser visitados
         bool visited[this->nodes]; // um array complementar, para verificar se o vértice já foi visitado
 
-        if (a > b) { // inverte a ordem da busca na lista, o objetivo é ir do menor vértice para o maior.
-            int m = a;
-            a = b;
-            b = m;
-        }
-
         for (int i = 0; i < this->nodes; ++i) {
             visited[i] = false;
         }
 
         visited[a] = true;
+        int last; // guarda o ultimo penultimo incremento de "it"
 
         while (true) {
             list<int>::iterator it; // iterator para fazer a busca na lista
@@ -37,10 +32,11 @@ struct Graph {
                 if (!visited[*it]) {
                     visited[*it] = true;
                     aux.push(*it);
+                    last = *it;
                 }
             }
 
-            if (*it == b || a == b) {
+            if (last == b || a == b) {
                 return 1;
             }
 
@@ -55,8 +51,20 @@ struct Graph {
 
     }
 
-    void removeWall(int w) { // remove a parede do labirinto e já conecta os vértices adjacentes
-        
+    void removeWall(int w, int n) { // remove a parede "W" do labirinto e já conecta os vértices adjacentes, o "N" é o tamanho do labirinto
+        int node;
+
+        if (w % ((2 * (n-1)) + 1) < n - 1) { // caso a parede seja vertical
+            node = ((w/((2 * (n-1)) + 1)) * n) + (w % ((2 * (n-1)) + 1)); // retorna o valor do vértice
+            this->adjacent[node].push_back(node + 1); // adiciona o vértice adjacente na lista
+            this->adjacent[node + 1].push_back(node);
+
+        } else { // caso a parede seja horizontal
+            node = ((w/((2 * (n-1)) + 1)) * n) + ((w % ((2 * (n-1)) + 1)) + 1); // retorna o valor do vértice
+            this->adjacent[node].push_back(node - n); // adiciona o vértice adjacente na lista
+            this->adjacent[node - n].push_back(node);
+        }
+
     }
 
 };
@@ -72,13 +80,12 @@ int main(int argc, char *argv[]) {
 
     for (int i = 0; i < cases; ++i) {
         cin >> mazeSize >> num_wallsRemoved >> num_queries;
-        mazeSize = mazeSize * mazeSize;
         Graph g(mazeSize);
 
         for (int j = 0; j < num_wallsRemoved; ++j) {
             int w;
             cin >> w;
-            g.removeWall(w);
+            g.removeWall(w, mazeSize);
         }
 
         for (int k = 0; k < num_queries; ++k) {
