@@ -18,6 +18,10 @@ struct Graph {
         queue<int> aux; // fila auxiliar para guardar os vértices adjacentes que ainda precisam ser visitados
         bool visited[this->nodes]; // um array complementar, para verificar se o vértice já foi visitado
 
+        if (a == b) {
+            return 1;
+        }
+        
         for (int i = 0; i < this->nodes; ++i) {
             visited[i] = false;
         }
@@ -34,10 +38,11 @@ struct Graph {
                     aux.push(*it);
                     last = *it;
                 }
-            }
 
-            if (last == b || a == b) {
-                return 1;
+                if (last == b || a == b) {
+                    return 1;
+                }
+
             }
 
             if (!aux.empty()) {
@@ -52,15 +57,17 @@ struct Graph {
     }
 
     void removeWall(int w, int n) { // remove a parede "W" do labirinto e já conecta os vértices adjacentes, o "N" é o tamanho do labirinto
-        int node;
+        int node, valor;
 
-        if (w % ((2 * (n-1)) + 1) < n - 1) { // caso a parede seja vertical
-            node = ((w/((2 * (n-1)) + 1)) * n) + (w % ((2 * (n-1)) + 1)); // retorna o valor do vértice
+        valor = ((2 * (n-1)) + 1);
+
+        if (w % valor < n - 1) { // caso a parede seja vertical
+            node = ((w/valor) * n) + (w % valor); // retorna o valor do vértice
             this->adjacent[node].push_back(node + 1); // adiciona o vértice adjacente na lista
             this->adjacent[node + 1].push_back(node);
 
         } else { // caso a parede seja horizontal
-            node = ((w/((2 * (n-1)) + 1)) * n) + ((w % ((2 * (n-1)) + 1)) + 1); // retorna o valor do vértice
+            node = ((w/valor) * n) + ((w % valor) + 1); // retorna o valor do vértice
             this->adjacent[node].push_back(node - n); // adiciona o vértice adjacente na lista
             this->adjacent[node - n].push_back(node);
         }
