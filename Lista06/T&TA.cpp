@@ -1,6 +1,8 @@
 #include <iostream>
+#include <vector>
 #include <list>
 #define endl '\n'
+#define INFINITE 10000
 
 using namespace std;
 
@@ -13,7 +15,7 @@ struct NodeWeight { // objeto nó com o peso.
 };
 
 
-struct MinHeap {
+struct MinHeap { // MinHeap construída com os nós e pesos
     NodeWeight **f;
     int arraySize;
     int heapSize;
@@ -31,6 +33,21 @@ struct MinHeap {
         f[this->heapSize] = n;
         this->heapSize++;
         bubble_up(heapSize);
+    }
+
+    void heap_update(NodeWeight *n) {
+        bool a = true;
+        for (int i = 0; i < heapSize && a; ++i) {
+            if (f[i]->link == n->link) {
+                f[i]->weight = n->weight;
+                bubble_up(heapSize);
+                a = false;
+            }
+        }
+
+        if(a) {
+           heap_insert(n);
+        }
     }
 
     void double_size() {
@@ -101,29 +118,27 @@ struct Graph {
         this->adjacent[nodeY].push_back(*y);
     }
 
-    int* dijkstra(int origin, int destiny) {
+    int* dijkstra(int origin) {
         double weights[this->nodes]; // vetor com os pesos entre os vértices
         int *precursor = new int[this->nodes]; // vetor com os precusores do menor caminho
         bool visited[this->nodes]; // vetor de vértices visitados
 
 
         for(int i = 0; i < this->nodes; ++i) {
-            weights[i] = INT_MAX;
+            weights[i] = INFINITE;
             precursor[i] = -1;
             visited[i] = false;
         }
 
         weights[origin] = 0;
-        precursor[0] = origin;
+        precursor[origin] = origin;
 
         MinHeap *h = new MinHeap();
         NodeWeight *aux = new NodeWeight(origin, 0);
 
         h->heap_insert(aux);
 
-        int index = 1;
-
-        while(h) { // enquanto tiver elemento na MinHeap
+        while(h->heapSize != 0) { // enquanto tiver elemento na MinHeap
             aux = h->heap_extract();
             int u = aux->link;
 
@@ -132,28 +147,24 @@ struct Graph {
 
                 list<NodeWeight>::iterator it;
 
-                for (it = this->adjacent[u].begin(); it != this->adjacent[u].end() && !this->adjacent[u].empty(); it++) {
+                for (it = this->adjacent[u].begin(); it != this->adjacent[u].end(); it++) {
                     int v = it->link;
                     double c = it->weight;
 
-                    if (v != destiny && weights[v] > weights[u] + c) {
+                    if (weights[v] > weights[u] + c) {
                         weights[v] = weights[u] + c;
+                        precursor[v] = u;
                         aux = new NodeWeight(v, weights[v]);
-                        h->heap_insert(aux);
-
-                    } else {
-                        precursor[index] = destiny;
-                        return precursor;
+                        h->heap_update(aux);
                     }
 
                 }
 
-                precursor[index] = h->heap_extract()->link;
-                index++;
-
             }
 
         }
+
+        return precursor;
 
     }
 
@@ -188,12 +199,22 @@ int main(int argc, char *argv[]) {
         cin >> origin >> destiny;
 
         int *precursor;
-        precursor = g.dijkstra(origin, destiny);
+        precursor = g.dijkstra(origin);
 
-        for(int i = 0; precursor[i] != -1; ++i) {
-            cout << precursor[i];
+        vector<int> shortest_path;
+        shortest_path.push_back(destiny);
 
-            if(precursor[i+1] != - 1) {
+        for (int j = destiny; precursor[j] != origin; j = precursor[j]) {
+            shortest_path.push_back(precursor[j]);
+        }
+
+        shortest_path.push_back(origin);
+
+        for(int i = 0; !shortest_path.empty(); ++i) {
+            cout << shortest_path.back();
+            shortest_path.pop_back();
+
+            if(!shortest_path.empty()) {
                 cout << " ";
             } else {
                 cout << endl;
