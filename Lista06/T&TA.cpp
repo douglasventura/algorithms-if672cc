@@ -6,75 +6,45 @@
 
 using namespace std;
 
-struct NodeWeight { // objeto nó com o peso.
-    int link; // ligacao com o nó
-    double weight; // peso do nó
-
-    NodeWeight(int link, double weight) : link(link), weight(weight) {}
-
-};
-
-
 struct MinHeap { // MinHeap construída com os nós e pesos
-    NodeWeight **f;
-    int arraySize;
-    int heapSize;
+    vector<pair<int, double>> f;
 
-    MinHeap() {
-        this->f = new NodeWeight*[2];
-        this->arraySize = 2;
-        this->heapSize = 0;
+    void heap_insert(pair<int, double> n) {
+        f.push_back(n);
+        bubble_up(f.size());
     }
 
-    void heap_insert(NodeWeight *n) {
-        if (this->arraySize == this->heapSize) {
-            double_size();
-        }
-        f[this->heapSize] = n;
-        this->heapSize++;
-        bubble_up(heapSize);
-    }
-
-    void heap_update(NodeWeight *n) {
+    void heap_update(pair<int, double> n) {
         bool a = true;
-        for (int i = 0; i < heapSize && a; ++i) {
-            if (f[i]->link == n->link) {
-                f[i]->weight = n->weight;
-                bubble_up(heapSize);
+        for (int i = 0; i < f.size() && a; ++i) {
+            if (f[i].first == n.first) {
+                f[i].second = n.second;
+                bubble_up(f.size());
                 a = false;
             }
         }
 
         if(a) {
-           heap_insert(n);
+            heap_insert(n);
         }
-    }
-
-    void double_size() {
-        NodeWeight **aux = new NodeWeight*[2* this->arraySize];
-        for (int i = 0; i < this->arraySize; ++i) {
-            aux[i] = this->f[i];
-        }
-        this->f = aux;
-        this->arraySize = 2* this->arraySize;
     }
 
     void bubble_up(int heapSize) {
-        int i = heapSize - 1;
+        int i = f.size() - 1;
 
-        while (i > 0 && this->f[i]->weight < this->f[(i-1)/2]->weight) {
-            NodeWeight *aux2 = this->f[i];
+        while (i > 0 && this->f[i].second < this->f[(i-1)/2].second) {
+            pair<int, double> aux2 = this->f[i];
             this->f[i] = f[(i-1)/2];
             this->f[(i-1)/2] = aux2;
             i = (i-1)/2;
         }
     }
 
-    NodeWeight* heap_extract() {
-        NodeWeight *aux3 = this->f[0];
-        this->f[0] = this->f[this->heapSize - 1];
-        this->f[this->heapSize - 1] = nullptr;
-        this->heapSize--;
+    pair<int, double> heap_extract() {
+        pair<int, double> aux3;
+        aux3 = this->f[0];
+        this->f[0] = this->f[this->f.size() - 1];
+        this->f.pop_back();
         heapify(0);
 
         return aux3;
@@ -85,16 +55,16 @@ struct MinHeap { // MinHeap construída com os nós e pesos
         int l = (2 * i) + 1;
         int r = (2 * i) + 2;
 
-        if (l < this->heapSize && this->f[l]->weight <= this->f[m]->weight) {
+        if (l < this->f.size() && this->f[l].second <= this->f[m].second) {
             m = l;
         }
 
-        if (r < this->heapSize && this->f[r]->weight <= this->f[m]->weight) {
+        if (r < this->f.size() && this->f[r].second <= this->f[m].second) {
             m = r;
         }
 
         if (m != i) {
-            NodeWeight *aux4 = this->f[i];
+            pair<int, double> aux4 = this->f[i];
             this->f[i] = this->f[m];
             this->f[m] = aux4;
             heapify(m);
@@ -106,16 +76,16 @@ struct MinHeap { // MinHeap construída com os nós e pesos
 
 struct Graph {
     int nodes; // número de nós
-    list<NodeWeight> *adjacent; // lista dos vértices adjacentes com o peso
+    list<pair<int, double> > *adjacent; // lista dos vértices adjacentes com o peso
 
     Graph(int nodes) {
         this->nodes = nodes;
-        this->adjacent = new list<NodeWeight>[this->nodes];
+        this->adjacent = new list<pair<int, double> >[this->nodes];
     }
 
-    void addEdge(int nodeX, int nodeY, NodeWeight *x, NodeWeight *y) { // adiciona a conexão entre os vértices
-        this->adjacent[nodeX].push_back(*x);
-        this->adjacent[nodeY].push_back(*y);
+    void addEdge(int nodeX, int nodeY, double w) { // adiciona a conexão entre os vértices
+        this->adjacent[nodeX].push_back({nodeY, w});
+        this->adjacent[nodeY].push_back({nodeX, w});
     }
 
     int* dijkstra(int origin) {
@@ -132,29 +102,28 @@ struct Graph {
         precursor[origin] = origin;
 
         MinHeap *h = new MinHeap();
-        NodeWeight *aux = new NodeWeight(origin, 0);
+        h->heap_insert({origin, 0});
 
-        h->heap_insert(aux);
+        while(h->f.size() != 0) { // enquanto tiver elemento na MinHeap
+            pair<int, double> aux = h->heap_extract();
 
-        while(h->heapSize != 0) { // enquanto tiver elemento na MinHeap
-            aux = h->heap_extract();
-
-            if(aux->weight > weights[aux->link]) {
+            if(aux.second > weights[aux.first]) {
                 continue;
             }
 
-            int u = aux->link;
+            int u = aux.first;
 
-            list<NodeWeight>::iterator it;
+            list<pair<int, double> >::iterator it;
 
             for (it = this->adjacent[u].begin(); it != this->adjacent[u].end(); it++) {
-                int v = it->link;
-                double c = it->weight;
+                int v = it->first;
+                double c = it->second;
 
                 if (weights[v] > weights[u] + c) {
                     weights[v] = weights[u] + c;
                     precursor[v] = u;
-                    aux = new NodeWeight(v, weights[v]);
+                    pair<int, double> aux;
+                    aux = {v, weights[v]};
                     h->heap_update(aux);
                 }
 
@@ -185,11 +154,7 @@ int main(int argc, char *argv[]) {
         cin >> nodeX >> nodeY >> speed >> cost;
 
         w = (p*speed + ((1-p)*cost)) / (speed+cost);
-
-        NodeWeight *x = new NodeWeight(nodeY, w);
-        NodeWeight *y = new NodeWeight(nodeX, w);
-
-        g.addEdge(nodeX, nodeY, x, y);
+        g.addEdge(nodeX, nodeY, w);
 
     }
 
