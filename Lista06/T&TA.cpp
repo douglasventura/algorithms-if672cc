@@ -121,13 +121,11 @@ struct Graph {
     int* dijkstra(int origin) {
         double weights[this->nodes]; // vetor com os pesos entre os vértices
         int *precursor = new int[this->nodes]; // vetor com os precusores do menor caminho
-        bool visited[this->nodes]; // vetor de vértices visitados
 
 
         for(int i = 0; i < this->nodes; ++i) {
             weights[i] = INFINITE;
             precursor[i] = -1;
-            visited[i] = false;
         }
 
         weights[origin] = 0;
@@ -140,24 +138,24 @@ struct Graph {
 
         while(h->heapSize != 0) { // enquanto tiver elemento na MinHeap
             aux = h->heap_extract();
+
+            if(aux->weight > weights[aux->link]) {
+                continue;
+            }
+
             int u = aux->link;
 
-            if(!visited[u]) {
-                visited[u] = true;
+            list<NodeWeight>::iterator it;
 
-                list<NodeWeight>::iterator it;
+            for (it = this->adjacent[u].begin(); it != this->adjacent[u].end(); it++) {
+                int v = it->link;
+                double c = it->weight;
 
-                for (it = this->adjacent[u].begin(); it != this->adjacent[u].end(); it++) {
-                    int v = it->link;
-                    double c = it->weight;
-
-                    if (weights[v] > weights[u] + c) {
-                        weights[v] = weights[u] + c;
-                        precursor[v] = u;
-                        aux = new NodeWeight(v, weights[v]);
-                        h->heap_update(aux);
-                    }
-
+                if (weights[v] > weights[u] + c) {
+                    weights[v] = weights[u] + c;
+                    precursor[v] = u;
+                    aux = new NodeWeight(v, weights[v]);
+                    h->heap_update(aux);
                 }
 
             }
@@ -195,9 +193,7 @@ int main(int argc, char *argv[]) {
 
     }
 
-    while(cin) {
-        cin >> origin >> destiny;
-
+    while(cin >> origin >> destiny) {
         int *precursor;
         precursor = g.dijkstra(origin);
 
@@ -210,7 +206,7 @@ int main(int argc, char *argv[]) {
 
         shortest_path.push_back(origin);
 
-        for(int i = 0; !shortest_path.empty(); ++i) {
+        while(!shortest_path.empty()) {
             cout << shortest_path.back();
             shortest_path.pop_back();
 
