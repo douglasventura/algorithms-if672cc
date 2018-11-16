@@ -4,29 +4,29 @@
 using namespace std;
 
 struct node {
-    int l;
-    int r;
+    int begin;
+    int end;
     int value;
     node *right;
     node *left;
 
-    node(int l, int r, int value) : l(l), r(r), value(value), root(nullptr) {}
+    node(int begin, int end, int value){
+        int interval = (begin + end)/2;
+        if(begin == end) {
+                
+        } else {
+            left = new node(0, interval, );
+            right = new node(interval + 1, end, );
+        }
+    }
 };
 
 
 struct binary_tree {
     node *root;
 
-    binary_tree(int *arr_sensors[], int l, int r) {
-        this->right = nullptr;
-        this->left = nullptr;
-
-        if(l == r) {
-            this->root->l = l;
-            this->root->r = r;
-        } else if () {
-
-        }
+    binary_tree() {
+        
     }
 };
 
