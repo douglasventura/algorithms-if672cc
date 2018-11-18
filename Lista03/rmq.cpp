@@ -14,7 +14,7 @@ struct Node {
         this->begin = begin;
         this->end = end;
 
-        if(begin == end) {
+        if (begin == end) {
             this->value = array[begin];
             this->right = nullptr;
             this->left = nullptr;
@@ -36,9 +36,9 @@ struct Segment_tree {
     }
 
     int RMQ(Node *node,int a, int b) {
-        if(a > b || a > node->end || b < node->begin) {
+        if (a > b || a > node->end || b < node->begin) {
             return INT_MAX;
-        } else if(a == node->begin && b == node->end) {
+        } else if (a == node->begin && b == node->end) {
             return node->value;
         } else {
             int h = (node->begin + node->end)/2;
@@ -47,7 +47,7 @@ struct Segment_tree {
     }
 
     void UPD(Node *node, int i, int x) {
-        if(node->begin == i && node->end == i) {
+        if (node->begin == i && node->end == i) {
             node->value = x;
         } else {
             int h = (node->begin + node->end)/2;
@@ -60,6 +60,21 @@ struct Segment_tree {
         }
     }
 
+    void PRT(Node *node, int a, int b) {
+        if (node->end > node->begin) {
+            if (node->left->end >= a) {
+                PRT(node->left, a, b);
+                cout << node->left->value << " ";
+            }
+
+            if (node->right->begin <= b) {
+                PRT(node->right, a, b);
+                cout << node->right->value << " ";
+            }
+
+        }
+
+    }
 
 };
 
@@ -68,44 +83,36 @@ int main(int argc, char *argv[]) {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
-
-    int *array = new int[10];
-    for (int i = 0; i < 10; ++i) {
-        array[i] = i;
-    }
-
-    Node *teste = new Node(0,9, array);
-
-    Segment_tree *arvore = new Segment_tree(teste);
-    cout << arvore->RMQ(arvore->root, 0,9) << endl;
-
-    arvore->UPD(arvore->root , 4, -1);
-    cout << arvore->RMQ(arvore->root, 0, 9);
-
-    /*
-    int num_sensors, sensors, a, b;
+    int num_sensors, sensors, i, x, a, b;
     string event;
 
     cin >> num_sensors;
-    int vecSensors[num_sensors];
+    int *arraySensors = new int[num_sensors];
     event = " ";
 
     for (int i = 0; i < num_sensors; ++i) {
         cin >> sensors;
-        vecSensors[i] = sensors;
+        arraySensors[i] = sensors;
     }
+
+    Node *node = new Node(0, num_sensors - 1, arraySensors);
+    Segment_tree *tree = new Segment_tree(node);
 
     while (event != "END") {
-        cin >> event >> a >> b;
+        cin >> event;
 
         if (event == "UPD") {
-
+            cin >> i >> x;
+            tree->UPD(tree->root, i, x);
         } else if (event == "RMQ") {
-
+            cin >> a >> b;
+            cout << tree->RMQ(tree->root, a, b) << endl;
         } else if (event == "PRT") {
-
+            cin >> a >> b;
+            tree->PRT(tree->root, a, b);
+            cout << node->value << endl;
         }
     }
-     */
+
     return 0;
 }
