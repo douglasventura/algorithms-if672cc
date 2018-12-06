@@ -1,26 +1,26 @@
-#include <bits/stdc++.h>
+#include <iostream>
 #define endl '\n'
 
 using namespace std;
 
-struct node {
+struct Node {
     int id;
     int hours;
-    node *next;
+    int company;
+    Node *next;
 
-    node(int id, int hours) : id(id), hours(hours), next(nullptr) {}
+    Node(int id, int hours, int company) : id(id), hours(hours), company(company), next(nullptr) {}
 
 };
 
-struct queue {
-    node *head;
-    node *tail;
+struct MyQueue {
+    Node *head;
+    Node *tail;
 
-    queue() : head(nullptr), tail(nullptr) {}
+    MyQueue() : head(nullptr), tail(nullptr) {}
 
-    void insert(int id, int hours) {
-        node *n = new node(id, hours);
-        if (!this->tail) {
+    void insert(Node *n) {
+        if (!this->head) {
             this->head = n;
             this->tail = n;
         } else {
@@ -29,44 +29,94 @@ struct queue {
         }
     }
 
-    void remove() {
-        if (this->head) {
-            this->head->next = ;
+    Node* remove() {
+        Node *removed = nullptr;
+        if (this->head == this->tail) {
+            removed = this->head;
+            this->head = nullptr;
+            this->tail = nullptr;
+        } else if (this->head->next == this->tail) {
+            removed = this->head;
+            this->head = this->tail;
+        } else {
+            removed = this->head;
+            this->head = this->head->next;
         }
-    }
 
-    int size() {
-        if (this->head) {
-
-        } else if (!this->head) {
-            return 0;
-        }
+        return removed;
     }
 
 };
 
-struct stack {
-    node *head;
-    node *tail;
+struct MyStack {
+    Node *top;
 
-    stack() : head(nullptr), tail(nullptr) {}
-    
+    MyStack() : top(nullptr) {}
+
+    void push(Node *n) {
+        if (!this->top) {
+            this->top = n;
+        } else {
+            n->next = this->top;
+            this->top = n;
+        }
+    }
+
+    Node* pop() {
+        Node *removed = nullptr;
+
+        if (this->top) {
+            removed = this->top;
+            this->top = this->top->next;
+        }
+
+        return removed;
+    }
+
 };
 
 int main(int argc, char *argv[]) {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    int e, process, id, p_hours, w_hours;
+    int e, qProcess, totalProcess, id, hours, numJugdes;
 
     cin >> e;
-    Queue *elements = new Queue[e];
+    totalProcess = 0;
+
+    MyQueue f[e];
 
     for (int i = 0; i < e; ++i) {
-        cin >> process;
-        for (int j = 0; j < process; ++j) {
-            cin >> id, p_hours;
-            elements[i].insert(id, p_hours);
+        cin >> qProcess;
+        totalProcess += totalProcess;
+
+        for (int j = 0; j < qProcess; ++j) {
+            cin >> id >> hours;
+            f[i].insert(new Node(id, hours, i));
+        }
+    }
+
+    cin >> numJugdes;
+
+    MyStack p[numJugdes];
+
+    int count, curJudge, curCompany;
+    count = curJudge = curCompany = 0;
+
+    while (count < qProcess) {
+        if (f[curCompany].head) {
+            p[curJudge].push(f[curCompany].remove());
+            curJudge++;
+            count++;
+        }
+
+        curCompany++;
+
+        if (curJudge == numJugdes) {
+            curJudge = 0;
+        }
+        if (curCompany == e) {
+            curCompany = 0;
         }
     }
 
