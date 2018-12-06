@@ -5,7 +5,7 @@
 using namespace std;
 
 string branch_bound(int* inputLemmings[], int* outputLemmings[], int begin, int end) {
-
+    
 }
 
 int main(int argc, char *argv[]) {
@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
             outputLemmings[k] = lemmings;
         }
     
-    solution = branch_bound(&inputLemmings, &outputLemmings, 0, numLemmings - 1);
+    solution = branch_bound(&inputLemmings, &outputLemmings, 0, numLemmings);
 
     cout << solution << endl;
 
