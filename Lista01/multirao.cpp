@@ -7,9 +7,10 @@ struct Node {
     int id;
     int hours;
     int company;
+    int originalPos;
     Node *next;
 
-    Node(int id, int hours, int company) : id(id), hours(hours), company(company), next(nullptr) {}
+    Node(int id, int hours, int company, int originalPos) : id(id), hours(hours), company(company), originalPos(originalPos), next(nullptr) {}
 
 };
 
@@ -42,7 +43,7 @@ struct MyQueue {
             removed = this->head;
             this->head = this->head->next;
         }
-
+        removed->next = nullptr;
         return removed;
     }
 
@@ -69,7 +70,7 @@ struct MyStack {
             removed = this->top;
             this->top = this->top->next;
         }
-
+        removed->next = nullptr;
         return removed;
     }
 
@@ -88,11 +89,11 @@ int main(int argc, char *argv[]) {
 
     for (int i = 0; i < e; ++i) {
         cin >> qProcess;
-        totalProcess += totalProcess;
+        totalProcess += qProcess;
 
         for (int j = 0; j < qProcess; ++j) {
             cin >> id >> hours;
-            f[i].insert(new Node(id, hours, i));
+            f[i].insert(new Node(id, hours, i, j));
         }
     }
 
@@ -103,7 +104,7 @@ int main(int argc, char *argv[]) {
     int count, curJudge, curCompany;
     count = curJudge = curCompany = 0;
 
-    while (count < qProcess) {
+    while (count < totalProcess) {
         if (f[curCompany].head) {
             p[curJudge].push(f[curCompany].remove());
             curJudge++;
@@ -120,6 +121,56 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    MyStack aux;
+    int q = 0;
+
+    for(int i = 0; i < numJugdes; i++) {
+        for(int j = 0; j < numJugdes; j++) {
+            if (i != j && p[i].top->id == j) {
+                p[j].push(p[i].pop());
+            } else if (i != j) {
+                aux.push(p[i].pop());
+            }
+            if (i != j && p[i].top) {
+                j--;
+            } else if (i != j) {
+                p[i] = aux;
+                aux.top = nullptr;
+            }
+        }
+
+    }
+
+    int qHours[numJugdes];
+    int auxHours[numJugdes];
+
+    for (int k = 0; k < numJugdes; ++k) {
+        cin >> qHours[k];
+        auxHours[k] = qHours[k];
+    }
+
+    while(totalProcess > 0) {
+        for(int j = 0; j < 24; j++) {
+            for(int k = 0; k < numJugdes; k++) {
+                if(p[k].top) {
+                    if(qHours[k] > 0) {
+                        qHours[k] -= 1;
+                        p[k].top->hours -= 1;
+
+                        if(p[k].top->hours <= 0) {
+                            cout << k << " " << p[k].top->company << " " << p[k].top->originalPos << endl;
+                            p[k].pop();
+                            totalProcess--;
+                        }
+                    }
+                }
+            }
+        }
+
+        for(int j = 0; j < numJugdes; j++) {
+            qHours[j] = auxHours[j];
+        }
+    }
 
     return 0;
 }
