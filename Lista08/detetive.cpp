@@ -6,19 +6,15 @@
 using namespace std;
 
 void Knapsack_01(int* pItem, int* wItem, int wKnapsack, int numItems) {
-    int d[numItems +1][wKnapsack +1];
-
-    for(int i = 0; i < numItems +1; ++i) {
-        d[i][0] = 0;
+    int **d = new int*[numItems +1];
+    
+    for(int i = 0; i < numItems +1; ++i){
+        d[i] = new int[wKnapsack +1];
     }
-
-    for(int j = 0; j < wKnapsack +1; ++j) {
-        d[0][j] = 0;
-    }
-
+    
     for(int m = 1; m <= numItems; ++m) {
         for(int k = 1; k <= wKnapsack; ++k) {
-            if (wItem[m-1] <= k) {
+            if(wItem[m-1] <= k) {
                 d[m][k] = max(d[m-1][k], pItem[m-1] + d[m-1][k - wItem[m-1]]);
             } else {
                 d[m][k] = d[m-1][k];
@@ -31,8 +27,8 @@ void Knapsack_01(int* pItem, int* wItem, int wKnapsack, int numItems) {
     list<int> *itemsSelected = new list<int>;
 
     int w = wKnapsack;
-    for (int i = numItems; i > 0 && res > 0; i--) {
-        if (res == d[i - 1][w]) {
+    for(int i = numItems; i > 0 && res > 0; i--) {
+        if(res == d[i - 1][w]) {
             continue;
         } else {
             itemsSelected->push_front(i - 1);
@@ -47,7 +43,7 @@ void Knapsack_01(int* pItem, int* wItem, int wKnapsack, int numItems) {
         cout << itemsSelected->front();
         itemsSelected->pop_front();
 
-        if (!itemsSelected->empty()) {
+        if(!itemsSelected->empty()) {
             cout << " ";
         } else {
             cout << endl;
@@ -63,10 +59,10 @@ int main(int argc, char *argv[]) {
 
     cin >> numItems >> wKnapsack;
 
-    int* pItem = new int[numItems];
-    int* wItem = new int[numItems];
+    int pItem[numItems];
+    int wItem[numItems];
 
-    for (int i = 0; i < numItems; ++i) {
+    for(int i = 0; i < numItems; ++i) {
         cin >> pItem[i] >> wItem[i];
     }
 
